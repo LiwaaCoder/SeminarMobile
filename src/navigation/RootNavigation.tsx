@@ -24,7 +24,7 @@ const RootNavigation = () => {
   return (
     <AuthContext.Provider value={{ user, setUser }}>
       <NavigationContainer>
-        {user === undefined ? <AuthNaviation /> : <HomeNavigation />}
+        {!user ? <AuthNaviation /> : <HomeNavigation />}
       </NavigationContainer>
     </AuthContext.Provider>
   );

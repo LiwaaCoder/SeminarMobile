@@ -11,6 +11,7 @@ interface Ingredient {
   image: string;
   unit: string;
 }
+
 interface Recipe {
   id: number;
   title: string;

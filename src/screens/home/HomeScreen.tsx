@@ -4,20 +4,40 @@ import React from "react";
 import { Container, RecipeView } from "../../components";
 import axios from "axios";
 import { Recipe } from "../../types";
-import { API_KEY } from "../../utils/Const";
 import { Icons } from "../../../assets/thems";
 import AuthContext from "../../context/AuthContext";
 import { removeDataFromStorage } from "../../utils/LocalStorage";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 
-const MAX_NUM = 2;
+const PARAMS = {
+  commandId: {
+    superapp: "2023b.gil.azani",
+    miniapp: "",
+    internalCommandId: "",
+  },
+  command: "GET_RECIPE",
+  targetObject: {
+    objectId: {
+      superapp: "2023b.gil.azani",
+      internalObjectId: "2ee5d3c1-2bb5-4147-9734-f28cf4a1ffc4",
+    },
+  },
+  invocationTimestamp: "",
+  invokedBy: {
+    userId: {
+      superapp: "2023b.gil.azani",
+      email: "yarden1@example.com",
+    },
+  },
+  commandAttributes: {},
+};
 
-const FETCH_RECIPES_URL = `https://api.spoonacular.com/recipes/random?apiKey=${API_KEY}&number=${MAX_NUM}`;
+const fetchRecipesUrl =
+  "http://localhost:8084/superapp/miniapp/dietitiansHelper";
 
 const HomeScreen = ({ navigation }: NativeStackHeaderProps) => {
   const { setUser } = React.useContext(AuthContext);
   const [search, setSearch] = React.useState("");
-  const [loading, setLoading] = React.useState(true);
   const [recipes, setRecipes] = React.useState<Recipe[]>([]);
 
   const logout = async () => {
@@ -25,60 +45,18 @@ const HomeScreen = ({ navigation }: NativeStackHeaderProps) => {
     setUser(undefined);
   };
 
-  const fetchRecipesWithParams = async () => {
-    const _recipes: Recipe[] = [];
+  const fetchRecipes = async () => {
     try {
-      const response = await axios.get(FETCH_RECIPES_URL);
-
-      if (!response.data) return [];
-
-      for (let r of response.data.recipes) {
-        const url = `https://api.spoonacular.com/recipes/${r.id}/nutritionWidget.json/?apiKey=${API_KEY}`;
-        const res = await axios.get(url);
-        const nutrients = res.data.nutrients;
-
-        const recipe: Recipe = {
-          id: r.id,
-          title: r.title,
-          image: r.image,
-          calories: 0,
-          fat: "",
-          protein: "",
-          carbs: "",
-        };
-
-        for (let nutrient of nutrients) {
-          switch (nutrient.name) {
-            case "Calories":
-              recipe.calories = nutrient.amount;
-              break;
-            case "Fat":
-              recipe.fat = nutrient.amount + nutrient.unit;
-              break;
-            case "Net Carbohydrates":
-              recipe.carbs = nutrient.amount + nutrient.unit;
-              break;
-            case "Protein":
-              recipe.protein = nutrient.amount + nutrient.unit;
-              break;
-            default:
-          }
-        }
+      const response = await axios.post(fetchRecipesUrl, PARAMS);
+      if (!response.data) return;
+      const _recipes: Recipe[] = [];
+      for (let recipe of response.data.commandAttributes.recipes) {
         _recipes.push(recipe);
       }
+      setRecipes(_recipes);
     } catch (err) {
       console.log(err);
-    } finally {
-      return _recipes;
     }
-  };
-
-  const loadMoreRecipes = async () => {};
-
-  const fetchRecipes = async () => {
-    const _recipes = await fetchRecipesWithParams();
-    setRecipes(_recipes);
-    setLoading(false);
   };
 
   React.useEffect(() => {
@@ -121,7 +99,6 @@ const HomeScreen = ({ navigation }: NativeStackHeaderProps) => {
               }
             />
           )}
-          // onEndReached={loadMoreRecipes}
         />
       </View>
     </Container>
