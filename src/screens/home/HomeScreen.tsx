@@ -15,11 +15,11 @@ const PARAMS = {
     miniapp: "",
     internalCommandId: "",
   },
-  command: "GET_RECIPE",
+  command: "GET_RANDOM_RECIPE",
   targetObject: {
     objectId: {
       superapp: "2023b.gil.azani",
-      internalObjectId: "2ee5d3c1-2bb5-4147-9734-f28cf4a1ffc4",
+      internalObjectId: "9aafac7f-1f57-4062-9e40-ba5126c7c5d3",
     },
   },
   invocationTimestamp: "",
@@ -29,7 +29,9 @@ const PARAMS = {
       email: "yarden1@example.com",
     },
   },
-  commandAttributes: {},
+  commandAttributes: {
+    number: 10,
+  },
 };
 
 const fetchRecipesUrl =
@@ -50,8 +52,19 @@ const HomeScreen = ({ navigation }: NativeStackHeaderProps) => {
       const response = await axios.post(fetchRecipesUrl, PARAMS);
       if (!response.data) return;
       const _recipes: Recipe[] = [];
-      for (let recipe of response.data.commandAttributes.recipes) {
-        _recipes.push(recipe);
+      for (let recipe of response.data) {
+        const _recipe: Recipe = {
+          id: recipe.id,
+          title: recipe.title,
+          image: recipe.image,
+          calories: Math.round(recipe.calories.amount),
+          fat: `${Math.round(recipe.fat.amount)} ${recipe.fat.unit}`,
+          carbs: `${Math.round(recipe.carbs.amount)} ${recipe.carbs.unit}`,
+          protein: `${Math.round(recipe.protein.amount)} ${
+            recipe.protein.unit
+          }`,
+        };
+        _recipes.push(_recipe);
       }
       setRecipes(_recipes);
     } catch (err) {

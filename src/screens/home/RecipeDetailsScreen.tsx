@@ -4,6 +4,7 @@ import {
   Image,
   View,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React from "react";
 import { Text } from "react-native-paper";
@@ -69,7 +70,14 @@ const RecipeDetailsScreen = ({ navigation, route }: RecipeDetailsScreen) => {
       </TouchableOpacity>
 
       {recipe === undefined ? (
-        <Text variant="titleLarge">Loading...</Text>
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <ActivityIndicator size={"large"} color={"white"} />
+          <Text variant="titleLarge" style={{ color: "white" }}>
+            Loading...
+          </Text>
+        </View>
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} style={styles.body}>
           <View>

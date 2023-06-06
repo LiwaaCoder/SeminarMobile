@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
     borderColor: "gray",
     borderWidth: 0.2,
     elevation: 5,
+    justifyContent: "space-between",
   },
   image: {
     width: "100%",
@@ -100,6 +101,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
+    marginBottom: 10,
   },
 });
 export default RecipeView;
