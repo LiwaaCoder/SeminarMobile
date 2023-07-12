@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Text, TextInput, Button, Divider } from "react-native-paper";
+import { Text, TextInput, Button } from "react-native-paper";
 import { Container } from "../../components";
 import { saveDataToStorage } from "../../utils/LocalStorage";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
@@ -21,11 +21,11 @@ const SignupScreen = ({ navigation }: NativeStackHeaderProps) => {
 
   const validation = () => {
     let status = true;
-    if (name == "") {
+    if (name === "") {
       setNameError(true);
       status = false;
     }
-    if (email == "") {
+    if (email === "") {
       setEmailError(true);
       status = false;
     }
@@ -47,15 +47,12 @@ const SignupScreen = ({ navigation }: NativeStackHeaderProps) => {
         email: email,
         username: email,
       };
-      const res = await axios.post(
-        "http://localhost:8084/superapp/users",
-        user
-      );
+      const res = await axios.post(CREATE_USER_URL, user);
 
       navigation.goBack();
     } catch (err) {
       console.log(err);
-      alert("faled to create user!");
+      alert("Failed to create user!");
     } finally {
       setLoading(false);
     }
@@ -69,10 +66,10 @@ const SignupScreen = ({ navigation }: NativeStackHeaderProps) => {
       >
         <Icons.ArrowBackIcon color="gray" />
       </TouchableOpacity>
-      <Text variant="displaySmall">Create new account</Text>
-      <View>
+      <Text style={styles.title}>Create New Account</Text>
+      <View style={styles.inputContainer}>
         <TextInput
-          style={{ marginVertical: 10 }}
+          style={styles.input}
           mode="outlined"
           label="Full Name"
           value={name}
@@ -83,7 +80,7 @@ const SignupScreen = ({ navigation }: NativeStackHeaderProps) => {
           autoCorrect={false}
         />
         <TextInput
-          style={{ marginVertical: 10 }}
+          style={styles.input}
           mode="outlined"
           label="Email"
           value={email}
@@ -97,7 +94,7 @@ const SignupScreen = ({ navigation }: NativeStackHeaderProps) => {
 
       <Button
         mode="contained"
-        style={{ marginVertical: 20, backgroundColor: "rgb(202, 37, 64)" }}
+        style={styles.button}
         loading={loading}
         onPress={handleCreateAccount}
       >
@@ -111,7 +108,8 @@ export default SignupScreen;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    flex: 1,
+    padding: 20,
   },
   header: {
     justifyContent: "center",
@@ -122,6 +120,20 @@ const styles = StyleSheet.create({
     borderColor: "gray",
     borderWidth: 1,
     marginBottom: 20,
-    marginHorizontal: 10,
+    marginLeft: 10,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  input: {
+    marginBottom: 10,
+  },
+  button: {
+    backgroundColor: "#202cb9",
   },
 });

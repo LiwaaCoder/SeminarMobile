@@ -1,13 +1,13 @@
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Searchbar, Text } from "react-native-paper";
-import React from "react";
-import { Container, RecipeView } from "../../components";
+import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import axios from "axios";
-import { Recipe } from "../../types";
+import { Recipe, RecipeDetails } from "../../types";
 import { Icons } from "../../../assets/thems";
 import AuthContext from "../../context/AuthContext";
 import { removeDataFromStorage } from "../../utils/LocalStorage";
-import { NativeStackHeaderProps } from "@react-navigation/native-stack";
+import { Container, RecipeView } from "../../components";
 
 const PARAMS = {
   commandId: {
@@ -34,13 +34,13 @@ const PARAMS = {
   },
 };
 
-const fetchRecipesUrl =
-  "http://localhost:8084/superapp/miniapp/dietitiansHelper";
+const fetchRecipesUrl = "http://localhost:8084/superapp/miniapp/dietitiansHelper";
 
 const HomeScreen = ({ navigation }: NativeStackHeaderProps) => {
-  const { setUser } = React.useContext(AuthContext);
-  const [search, setSearch] = React.useState("");
-  const [recipes, setRecipes] = React.useState<Recipe[]>([]);
+  const { setUser } = useContext(AuthContext);
+  const [search, setSearch] = useState("");
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
 
   const logout = async () => {
     await removeDataFromStorage("user");
@@ -53,55 +53,81 @@ const HomeScreen = ({ navigation }: NativeStackHeaderProps) => {
       if (!response.data) return;
       const _recipes: Recipe[] = [];
       for (let recipe of response.data) {
-        const _recipe: Recipe = {
+        const _recipe: RecipeDetails = {
           id: recipe.id,
           title: recipe.title,
           image: recipe.image,
           calories: Math.round(recipe.calories.amount),
           fat: `${Math.round(recipe.fat.amount)} ${recipe.fat.unit}`,
           carbs: `${Math.round(recipe.carbs.amount)} ${recipe.carbs.unit}`,
-          protein: `${Math.round(recipe.protein.amount)} ${
-            recipe.protein.unit
-          }`,
+          protein: `${Math.round(recipe.protein.amount)} ${recipe.protein.unit}`,
+          summary: "",
+          ingredients: [],
         };
+
+        for (let ingredient of recipe.extendedIngredients) {
+          _recipe.ingredients.push({
+            aisle: ingredient.name,
+            amount: ingredient.amount,
+            image: ingredient.image,
+            unit: ingredient.unit,
+          });
+        }
         _recipes.push(_recipe);
       }
+
       setRecipes(_recipes);
+
+      // Filter the recipes based on the search term
+      const filtered = _recipes.filter((recipe) =>
+        recipe.title.toLowerCase().includes(search.toLowerCase())
+      );
+      setFilteredRecipes(filtered);
     } catch (err) {
       console.log(err);
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchRecipes();
   }, []);
 
   return (
-    <Container style={{ backgroundColor: "rgb(202, 37, 64)" }}>
+    <Container style={{ backgroundColor: "#F5F5F5" }}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.logoutBtn} onPress={() => logout()}>
           <Icons.LogoutIcon />
         </TouchableOpacity>
-        <Text
-          variant="displaySmall"
-          style={{ color: "white", fontWeight: "bold", marginBottom: 10 }}
-        >
+        <Text variant="displaySmall" style={styles.titleText}>
           Recipes
         </Text>
         <Searchbar
           value={search}
-          onChangeText={(txt) => setSearch(txt)}
+          onChangeText={(txt) => {
+            setSearch(txt);
+            const filtered = recipes.filter((recipe) =>
+              recipe.title.toLowerCase().includes(txt.toLowerCase())
+            );
+            setFilteredRecipes(filtered);
+          }}
           mode="bar"
-          style={{ backgroundColor: "white", borderRadius: 10 }}
+          style={styles.searchBar}
           placeholder="Search..."
         />
       </View>
       <View style={styles.body}>
         <FlatList
-          ListEmptyComponent={<Text variant="titleLarge">Loading...</Text>}
+          ListEmptyComponent={
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size={"large"} color={"#CA2540"} />
+              <Text variant="titleLarge" style={styles.loadingText}>
+                Loading...
+              </Text>
+            </View>
+          }
           showsVerticalScrollIndicator={false}
           initialNumToRender={20}
-          data={recipes}
+          data={filteredRecipes}
           keyExtractor={(_, index) => index.toString()}
           numColumns={2}
           renderItem={({ item }) => (
@@ -110,6 +136,7 @@ const HomeScreen = ({ navigation }: NativeStackHeaderProps) => {
               onPress={() =>
                 navigation.navigate("RecipeDetailsScreen", { recipe: item })
               }
+              titleStyle={styles.recipeTitle}
             />
           )}
         />
@@ -136,5 +163,30 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
     zIndex: 99,
+  },
+  titleText: {
+    color: "black",
+    fontWeight: "bold",
+    marginBottom: 10,
+    fontSize: 24,
+    alignSelf: "center",
+  },
+  searchBar: {
+    backgroundColor: "white",
+    borderRadius: 10,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    color: "#CA2540",
+    fontSize: 24,
+  },
+  recipeTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "blue",
   },
 });

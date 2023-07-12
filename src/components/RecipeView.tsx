@@ -1,3 +1,4 @@
+import React from "react";
 import { View, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Caption, Text } from "react-native-paper";
 import { Recipe } from "../types";
@@ -6,9 +7,10 @@ import { Icons } from "../../assets/thems";
 interface RecipeViewProps {
   recipe: Recipe;
   onPress: VoidFunction;
+  titleStyle?: object;
 }
 
-const RecipeView = ({ recipe, onPress }: RecipeViewProps) => {
+const RecipeView = ({ recipe, onPress, titleStyle }: RecipeViewProps) => {
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -23,7 +25,11 @@ const RecipeView = ({ recipe, onPress }: RecipeViewProps) => {
       />
 
       <View style={styles.detailsWrapper}>
-        <Text variant="titleSmall" style={styles.title} numberOfLines={2}>
+        <Text
+          variant="titleSmall"
+          style={[styles.title, titleStyle]} // Apply the titleStyle
+          numberOfLines={2}
+        >
           {recipe.title}
         </Text>
 
@@ -104,4 +110,5 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
+
 export default RecipeView;

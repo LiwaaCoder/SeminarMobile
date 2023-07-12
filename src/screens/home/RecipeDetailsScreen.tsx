@@ -11,12 +11,10 @@ import { Text } from "react-native-paper";
 import { Container } from "../../components";
 import { Icons } from "../../../assets/thems";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
-import { Recipe, RecipeDetails } from "../../types";
-import { API_KEY } from "../../utils/Const";
-import axios from "axios";
+import { RecipeDetails } from "../../types";
 
 type RecipeDetailsScreen = NativeStackHeaderProps & {
-  route: { params: { recipe: Recipe } };
+  route: { params: { recipe: RecipeDetails } };
 };
 
 const RecipeDetailsScreen = ({ navigation, route }: RecipeDetailsScreen) => {
@@ -25,40 +23,9 @@ const RecipeDetailsScreen = ({ navigation, route }: RecipeDetailsScreen) => {
   );
 
   React.useEffect(() => {
-    const _recipe: Recipe = route.params.recipe;
-    const fetchData = async () => {
-      try {
-        const FETCH_URL = `https://api.spoonacular.com/recipes/${_recipe.id}/information?apiKey=${API_KEY}&includeNutrition=false`;
-        const response = await axios.get(FETCH_URL);
-        const __recipe: RecipeDetails = {
-          summary: response.data.summary,
-          ingredients: [],
-          id: _recipe.id,
-          title: _recipe.title,
-          image: _recipe.image,
-          calories: _recipe.calories,
-          fat: _recipe.fat,
-          carbs: _recipe.carbs,
-          protein: _recipe.protein,
-        };
-
-        for (let ingredient of response.data.extendedIngredients) {
-          __recipe.ingredients.push({
-            aisle: ingredient.aisle,
-            amount: ingredient.amount,
-            image: ingredient.image,
-            unit: ingredient.unit,
-          });
-        }
-
-        setRecipe(__recipe);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    fetchData();
-  });
+    const _recipe: RecipeDetails = route.params.recipe;
+    setRecipe(_recipe);
+  }, []);
 
   return (
     <Container style={{ backgroundColor: "rgb(202, 37, 64)" }}>

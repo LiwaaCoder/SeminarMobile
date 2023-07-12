@@ -51,16 +51,10 @@ const LoginScreen = ({ navigation }: NativeStackHeaderProps) => {
 
   return (
     <Container style={styles.container}>
-      <Image
-        source={Images.LoginScreenImage}
-        style={styles.image}
-        resizeMode="stretch"
-      />
-
-      <View style={{ marginTop: 20, padding: 10 }}>
-        <Text variant="displaySmall">Login</Text>
+      <View style={styles.contentContainer}>
+        <Text style={styles.title}>Login To Our RecipesMenu </Text>
         <TextInput
-          style={{ marginVertical: 10 }}
+          style={styles.input}
           mode="outlined"
           label="Email"
           value={email}
@@ -71,20 +65,21 @@ const LoginScreen = ({ navigation }: NativeStackHeaderProps) => {
           autoCorrect={false}
         />
       </View>
-      <View style={styles.buttonsWRapper}>
+
+      <View style={styles.buttonsContainer}>
         <Button
           mode="contained"
-          style={styles.btn}
+          style={styles.loginButton}
           onPress={handleLogin}
           loading={loading}
         >
           Login
         </Button>
-        <Divider bold />
+        <Divider style={styles.divider} />
         <Button
           mode="contained-tonal"
-          style={[styles.btn, { opacity: 0.6 }]}
-          labelStyle={{ color: "white" }}
+          style={styles.signupButton}
+          labelStyle={styles.signupButtonText}
           onPress={handleSignup}
         >
           Signup
@@ -97,17 +92,48 @@ const LoginScreen = ({ navigation }: NativeStackHeaderProps) => {
 export default LoginScreen;
 
 const styles = StyleSheet.create({
-  container: {},
-  buttonsWRapper: { marginTop: 20 },
-  btn: {
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  input: {
+    width: "80%",
+    marginBottom: 20,
+  },
+  buttonsContainer: {
+    marginBottom: 20,
+    alignItems: "center",
+  },
+  loginButton: {
     width: 200,
-    alignSelf: "center",
-    marginVertical: 10,
+    marginTop: 10,
     backgroundColor: "rgb(202, 37, 64)",
   },
-  image: {
-    width: "90%",
-    height: 200,
-    alignSelf: "center",
+  divider: {
+    width: "80%",
+    marginBottom: 5,
+  },
+  signupButton: {
+    backgroundColor: "rgb(202, 37, 64)",
+    borderRadius: 10,
+    marginVertical: 10,
+  },
+  signupButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+    paddingVertical: 8,
   },
 });
