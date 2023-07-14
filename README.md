@@ -1,6 +1,5 @@
-# **Recipe App**
+# **Recipes App**
 
-# Detitans Random Recipes
 
 Detitans Random Recipes is a React Native application that generates random recipes using the Spoonacular API. This project was developed as part of my studies for Wix exams, and it showcases my skills in React Native, backend development with Spring Boot, and database management with MongoDB.
 
